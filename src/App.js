@@ -1,7 +1,9 @@
+import ProductPage from "./component/ProductPage/ProductPage";
+
 function App() {
   return (
     <>
-      <p>TreerexStore</p>
+      <ProductPage />
     </>
   );
 }
