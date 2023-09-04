@@ -1,8 +1,6 @@
 import React from "react";
 import styles from "./SideBar.module.css";
 import Checkbox from "@mui/material/Checkbox";
-import { light } from "@mui/material/styles/createPalette";
-// const label = { inputProps: { "aria-label": "Checkbox demo" } };
 const genderArray = ["Men", "Women"];
 const priceArray = ["0-250", "251-450", "450"];
 const typeArray = ["Polo", "Hoodie", "Basic"];

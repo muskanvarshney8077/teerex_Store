@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
@@ -7,15 +7,14 @@ import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 
-const Cards = ({ data, handleAddToCart }) => {
-  let cartData = JSON.parse(localStorage.getItem("cartsData"));
+const Cards = ({ data, handleAddToCart, cart }) => {
+  const { imageURL, id, name, price, quantity } = data;
 
-  const { imageURL, id, name, price } = data;
-  const AddToCartButton = ({ id, handleAddToCart }) => {
+  const AddToCartButton = ({ id, handleAddToCart, quantity }) => {
     return (
       <Button
         value={id}
-        onClick={(e) => handleAddToCart(e.target.value, 1)}
+        onClick={(e) => handleAddToCart(e.target.value, 1, quantity)}
         size="small"
         sx={{
           backgroundColor: "#75dc94",
@@ -33,8 +32,7 @@ const Cards = ({ data, handleAddToCart }) => {
     );
   };
 
-  const QtyHandler = ({ id, qty, handleAddToCart }) => {
-    // console.log(qty);
+  const QtyHandler = ({ id, qty, handleAddToCart, quantity }) => {
     return (
       <Box
         sx={{
@@ -47,9 +45,13 @@ const Cards = ({ data, handleAddToCart }) => {
           fontWeight: 600,
         }}
       >
-        <button onClick={() => handleAddToCart(id, qty - 1)}>-</button>
+        <button onClick={() => handleAddToCart(id, qty - 1, quantity)}>
+          -
+        </button>
         <Typography>{qty}</Typography>
-        <button onClick={() => handleAddToCart(id, qty + 1)}>+</button>
+        <button onClick={() => handleAddToCart(id, qty + 1, quantity)}>
+          +
+        </button>
       </Box>
     );
   };
@@ -81,25 +83,35 @@ const Cards = ({ data, handleAddToCart }) => {
         <Typography size="small" sx={{ fontWeight: 600 }}>
           RS {price}
         </Typography>
-        {cartData.map((cart) => Number(cart.itemId)).includes(Number(id)) ? (
-          <QtyHandler
-            id={id}
-            qty={
-              cartData.map((ele) => {
-                if (Number(ele.itemId) === Number(id))
-                  return Number(ele.itemQty);
-                else return null;
-              })[0]
-            }
-            handleAddToCart={handleAddToCart}
-          />
+        {quantity ? (
+          cart.map((element) => Number(element.itemId)).includes(Number(id)) ? (
+            <QtyHandler
+              id={id}
+              quantity={quantity}
+              qty={
+                [...cart].filter((ele) => {
+                  if (ele.itemId === Number(id)) return Number(ele.itemQty);
+                })[0].itemQty
+              }
+              handleAddToCart={handleAddToCart}
+            />
+          ) : (
+            <AddToCartButton
+              id={id}
+              handleAddToCart={handleAddToCart}
+              quantity={quantity}
+            />
+          )
         ) : (
-          <AddToCartButton id={id} handleAddToCart={handleAddToCart} />
+          <Box>
+            <Button
+              variant="disabled"
+              sx={{ backgroundColor: "grey", color: "black" }}
+            >
+              Out Of Stock
+            </Button>
+          </Box>
         )}
-        {/* {console.log(
-          cartData.map((item) => Number(item.itemId)).includes(Number(id))
-        )}
-        <AddToCartButton id={id} handleAddToCart={handleAddToCart} /> */}
       </CardActions>
     </Card>
   );

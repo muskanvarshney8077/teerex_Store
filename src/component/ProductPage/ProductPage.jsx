@@ -5,7 +5,7 @@ import ProductCard from "../ProductsCard/ProductCard";
 import styles from "./ProductPage.module.css";
 import SideBar from "../Sidebar/SideBar";
 
-const ProductPage = () => {
+const ProductPage = ({ setCart, cart }) => {
   const [searchText, setSearchText] = useState("");
   const [style, setStyle] = useState(false);
   const [genders, setGenders] = useState([]);
@@ -16,7 +16,7 @@ const ProductPage = () => {
   const changeFilterStyle = () => {
     setStyle(!style);
   };
-  // console.log(searchText);
+
   const handleGender = (e) => {
     e.target.checked
       ? setGenders((prevState) => [...prevState, e.target.value])
@@ -48,7 +48,7 @@ const ProductPage = () => {
 
   return (
     <>
-      <Navbar />
+      <Navbar count={cart.reduce((a, c) => a + c.itemQty, 0)} />
       <Search
         searchText={searchText}
         setSearchText={setSearchText}
@@ -68,6 +68,8 @@ const ProductPage = () => {
           handlePriceRange={handlePriceRange}
         />
         <ProductCard
+          setCart={setCart}
+          cart={cart}
           searchText={searchText}
           colors={colors}
           types={types}

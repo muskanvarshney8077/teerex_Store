@@ -5,7 +5,7 @@ import App from "./App";
 import { SnackbarProvider } from "notistack";
 
 import { ThemeProvider } from "@mui/system";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import theme from "./theme";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

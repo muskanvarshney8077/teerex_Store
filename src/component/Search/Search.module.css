@@ -35,19 +35,3 @@
     align-items: center;
   }
 }
-/* .showFilterSection {
-  display: block;
-  height: 20px;
-  width: 20px;
-  position: absolute;
-  right: 0;
-  top: 1;
-  z-index: 10;
-  background-color: red;
-  @media screen and (min-width: 768px) {
-    display: none;
-  }
-}
-.hideFilterSection {
-  display: none;
-} */

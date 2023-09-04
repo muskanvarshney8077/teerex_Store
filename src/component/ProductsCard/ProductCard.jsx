@@ -4,11 +4,20 @@ import Grid from "@mui/material/Grid";
 import Cards from "../Card/Card";
 import { useSnackbar } from "notistack";
 
-const ProductCard = ({ searchText, colors, types, genders, prices }) => {
+const ProductCard = ({
+  setCart,
+  cart,
+  searchText,
+  colors,
+  types,
+  genders,
+  prices,
+}) => {
   const { enqueueSnackbar } = useSnackbar();
   const [filterData, setFilterData] = useState([]);
-  const [cart, setCart] = useState([{}]);
+
   const [data, setData] = useState([]);
+
   const fetchData = async () => {
     try {
       const res = await axios.get(
@@ -33,10 +42,6 @@ const ProductCard = ({ searchText, colors, types, genders, prices }) => {
 
     filterFunction(searchText.toLowerCase(), colors, types, prices, genders);
   }, [searchText, colors, types, prices, genders]);
-
-  useEffect(() => {
-    persistCartData();
-  }, [cart]);
 
   const filterFunction = (filter, colors, types, prices, genders) => {
     let newData = [...data];
@@ -67,7 +72,6 @@ const ProductCard = ({ searchText, colors, types, genders, prices }) => {
           let high = 1 / 0;
           if (!range.includes("-")) {
             low = Number(range);
-            console.log(low);
           } else {
             low = range.split("-")[0];
             high = range.split("-")[1];
@@ -85,37 +89,32 @@ const ProductCard = ({ searchText, colors, types, genders, prices }) => {
     }
     setFilterData(newData);
   };
-  // const handleAddToCart = (id, qty) => {
-  //   setCart(
-  //     (prevState) => {
-  //       return [...prevState, { itemId: Number(id), itemQty: qty }];
-  //     }
-  //     //   [
-  //     //   ...prevState,
-  //     //   { itemId: Number(id), itemQty: qty },
-  //     // ]
-  //   );
-  //   // console.log(cart);
-  //   // console.log(id, qty);
-  // };
-  const handleAddToCart = (id, qty) => {
-    setCart((prevState) => {
-      let found = false;
-      let oldData = prevState.map((item) => {
-        if (item.itemId === Number(id)) {
-          found = true;
-          return { ...item, itemQty: qty };
-        } else return item;
+
+  const handleAddToCart = (id, qty, quantity) => {
+    if (qty > quantity) {
+      enqueueSnackbar("exceeding the avaiable quantity", {
+        variant: "warning",
       });
-      if (found) {
-        return [...oldData, { itemId: Number(id), itemQty: qty }];
-      } else return oldData;
-    });
-  };
-  console.log(cart);
-  const persistCartData = () => {
-    // console.log(cart);
-    localStorage.setItem("cartsData", JSON.stringify(cart));
+      return;
+    }
+    if (qty) {
+      setCart((prevState) => {
+        let found = false;
+        let oldData = prevState.map((item) => {
+          if (item.itemId === Number(id)) {
+            found = true;
+            return { ...item, itemQty: qty };
+          } else return item;
+        });
+        if (!found) {
+          return [...oldData, { itemId: Number(id), itemQty: qty }];
+        } else return oldData;
+      });
+    } else {
+      setCart((prevState) =>
+        prevState.filter((item) => item.itemId !== Number(id))
+      );
+    }
   };
 
   return (
@@ -124,9 +123,10 @@ const ProductCard = ({ searchText, colors, types, genders, prices }) => {
         <Grid item xs={12} sm={6} md={4} key={item.id}>
           <Cards
             data={item}
-            handleAddToCart={(id, qty) => {
-              handleAddToCart(id, qty);
+            handleAddToCart={(id, qty, quantity) => {
+              handleAddToCart(id, qty, quantity);
             }}
+            cart={cart}
           />
         </Grid>
       ))}
